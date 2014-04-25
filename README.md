@@ -19,7 +19,9 @@ of selectors. Furthermore, the runtime method selection relies only on
 `instanceof` and `typeof` (i.e., not on the `constructor` or
 `__proto__` properties, nor on the `Object.getPrototypeOf' method).
 
-My motivation for this module is avoiding hand-written overloading of functions in [amqp.node][]. In the API I would like to have, for instance,
+My motivation for this module is avoiding hand-written overloading of
+functions in [amqp.node][]. In the amqp.node API I would like to have,
+for instance,
 
 ```js
 Channel#assertQueue(queue, callback)
@@ -58,18 +60,22 @@ I'd like to write something more like this:
 
 ```js
 var assertQueue = make_procedure();
+
 define_method(assertQueue, Channel, String, Function,
     function(ch, queue, callback) {
       return assertQueue(ch, queue, {}, callback);
     });
+
 define_method(assertQueue, Channel, Object, Function,
     function(ch, options, callback) {
       return assertQueue('', options, callback);
     });
+
 define_method(assertQueue, Channel, String, Object, Function,
     function(ch, name, options, callback) {
       // ... do an RPC with the name and options given
     });
+
 Channel.prototype.assertQueue = assertQueue;
 ```
 
@@ -83,6 +89,25 @@ depending on the types of the arguments. In those latter cases, it's
 handy to be able to define the variations in different places, say if
 one is extending a procedure defined elsewhere to account for a new
 type.
+
+## Related work
+
+[http://blog.vjeux.com/2010/javascript/javascript-full-dispatch-multimethod.html][]
+takes a very similar tack to my intial implementation, but is perhaps
+a bit more general (since it allows methods to be defined using
+predicates rather than just constructors). The method selection is
+"first match wins", which is ultimately not what I'm after.
+
+[http://krisjordan.com/multimethod-js] looks similar (mainly due to
+the name), but mimics the generic dispatch feature in Clojure (also
+called "multimethods", which is a misnomer, in my opinion).
+
+The algorithm, which can be summarised as "calculate a dispatch value
+based on the argument then select the method associated with that
+value", doesn't lend itself to dispatching on the types of the
+arguments. For this reason it's not of use to me. (The Clojure
+implementation is a bit more capable, and is able to dispatch using a
+subclass relationship; it's still "first match wins" though.)
 
 [pmd]: https://github.com/squaremo/js-pmd
 [amqp.node]: https://github.com/squaremo/amqp.node
