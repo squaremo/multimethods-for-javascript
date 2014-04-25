@@ -92,7 +92,7 @@ type.
 
 ## Related work
 
-[http://blog.vjeux.com/2010/javascript/javascript-full-dispatch-multimethod.html][]
+[http://blog.vjeux.com/2010/javascript/javascript-full-dispatch-multimethod.html]
 takes a very similar tack to my intial implementation, but is perhaps
 a bit more general (since it allows methods to be defined using
 predicates rather than just constructors). The method selection is
