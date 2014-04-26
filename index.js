@@ -34,7 +34,14 @@ function dispatch_method(arity, methods, args, fail) {
         continue next_candidate;
       }
     }
-    var fun = candidate.method; return fun.apply(fun, args);
+    var fun = candidate.method;
+    switch (arity) {
+    case 0: return fun();
+    case 1: return fun(args[0]);
+    case 2: return fun(args[0], args[1]);
+    case 3: return fun(args[0], args[1], args[2]);
+    default: return fun.apply(fun, args);
+    }
   }
   return fail(args);
 }
